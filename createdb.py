@@ -1,46 +1,50 @@
 import sqlite3
 
-def main():
-    #Connect to database (Creates it if missing)
-    conn= sqlite3.connect("results.db")
-    cursor= conn.cursor()
+conn = sqlite3.connect('results.db')
+cursor = conn.cursor()
 
-    #Create Tables
-    cursor.execute(""" CREATE TABLE IF NOT EXISTS students (
-                   id INTEGER PRIMARY KEY AUTOINCREMENT,
-                   name TEXT NOT NULL,
-                   roll_number INTEGER UNIQUE NOT NULL)
-                   """)
-    cursor.execute("""
-                   CREATE TABLE IF NOT EXISTS marks(
-                   id INTEGER PRIMARY KEY AUTOINCREMENT,
-                   student_id INTEGER,
-                   subject TEXT NOT NULL,
-                   score INTEGER NOT NULL,
-                   FOREIGN KEY(student_id) REFERENCES students(id)
-                   )
-                   """)
-    #Insert Dummy Students
-    students=[("Priyanshu",5025),("Rahul",101),("Amit",102)]
-    for name, roll in students:
-        cursor.execute("INSERT OR IGNORE INTO students (name, roll_number) VALUES (?, ?)", (name, roll))
+# Create students table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS students (
+    student_id INTEGER PRIMARY KEY,
+    roll_number TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL
+)
+''')
 
-    #Insert Dummy Marks
-    #Clear old data first to avoid duplicates
-    cursor.execute("DELETE FROM marks")
+# Create marks table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS marks (
+    mark_id INTEGER PRIMARY KEY,
+    student_id INTEGER,
+    subject TEXT NOT NULL,
+    marks INTEGER,
+    FOREIGN KEY(student_id) REFERENCES students(student_id)
+)
+''')
 
-    #GEt student IDs
-    cursor.execute("SELECT id,roll_number FROM students")
-    for student_id, roll in cursor.fetchall():
-        if roll == 5025: #Your marks
-            data = [("Python",95),("Statistics",88),("Math",92),("English",85)]
-        else: #Other students' marks
-            data = [("Python",70),("Statistics",60),("Math",75),("English",80)]
-        for subject, score in data:
-            cursor.execute("INSERT INTO marks (student_id, subject, score) VALUES (?,?, ?)",(student_id,subject,score))
-    conn.commit()
-    conn.close()
-    print("Database 'results.db' created successfully.")
+# Insert dummy data
+students = [
+    ('101', 'Alice Johnson'),
+    ('102', 'Bob Smith'),
+    ('103', 'Charlie Lee')
+]
+cursor.executemany('INSERT INTO students (roll_number, name) VALUES (?, ?)', students)
 
-if __name__ == "__main__":
-    main()
+marks = [
+    (1, 'Mathematics', 95),
+    (1, 'Physics', 88),
+    (1, 'Chemistry', 92),
+    (2, 'Mathematics', 78),
+    (2, 'Physics', 85),
+    (2, 'Chemistry', 80),
+    (3, 'Mathematics', 65),
+    (3, 'Physics', 72),
+    (3, 'Chemistry', 70)
+]
+cursor.executemany('INSERT INTO marks (student_id, subject, marks) VALUES (?, ?, ?)', marks)
+
+conn.commit()
+conn.close()
+
+print("Database 'results.db' created successfully.")
