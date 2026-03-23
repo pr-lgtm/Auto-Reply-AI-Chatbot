@@ -1,7 +1,5 @@
 # AUTO-REPLY AI CHATBOT FOR STUDENT RESULT QUERIES
 
-#### Video Demo: https://youtu.be/yj326LIl3o4?si=9D2bov68jI_69mXU
-
 #### Description
 
 The **Auto-Reply AI Chatbot for Student Result Queries** is a Command Line Application written in Python that is intended to be an Intelligent Automated Support System that assists students with their result queries at an Academic Institution. This was my final project submission for CS50's Introduction to Computer Science course.
